@@ -46,12 +46,21 @@ current_values = []
 
 # Set up live graph plotting
 plt.ion()  # Turn on interactive mode
-fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
-fig.suptitle('Live Voltage and Current Measurements')
+fig1, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+fig1.suptitle('Live Voltage and Current Measurements')
 
 ax1.set_ylabel('Voltage (V)')
 ax2.set_xlabel('Time (s)')
 ax2.set_ylabel('Current (A)')
+
+# Set up live graph plotting for Current vs Voltage
+fig2, (ax3, ax4) = plt.subplots(2, 1, sharex=True)
+fig2.suptitle('Live Current vs Voltage')
+
+ax3.set_xlabel('Voltage (V)')
+ax3.set_ylabel('Current (A)')
+
+
 
 # Open the file for writing
 with open(file_path, 'w') as file:
@@ -64,30 +73,38 @@ with open(file_path, 'w') as file:
         time.sleep(50)  # Wait for 50 seconds to stabilize the voltage, can change 50 second to other value of your choice also. 
 
 
-    # for _ in range(10):  # Perform 10 measurements at the current voltage
-    keithley.write(":OUTP ON")  # Turn on the output:  This is the command being sent to the instrument. It tells the instrument to turn its output on. When the output is turned on, the instrument will generate or provide the specified output, which in this context is current.
-    
-    # voltage_reading = float(keithley.query(":READ?"))  # --> can read voltage also.
-    # keithley.write(":OUTP OFF")  # Turn off the output, it's good practice.
+        # for _ in range(10):  # Perform 10 measurements at the current voltage
+        keithley.write(":OUTP ON")  # Turn on the output:  This is the command being sent to the instrument. It tells the instrument to turn its output on. When the output is turned on, the instrument will generate or provide the specified output, which in this context is current.
+        
+        # voltage_reading = float(keithley.query(":READ?"))  # --> can read voltage also.
+        # keithley.write(":OUTP OFF")  # Turn off the output, it's good practice.
 
-    current_reading = float(keithley.query(":MEAS?")) # reading the current value, here float  is used for typecast the string to float because the keithley.query(":MEAS?") --> returns the measured value.
-    keithley.write(":OUTP OFF")  # Turn off the output
+        current_reading = float(keithley.query(":MEAS?")) # reading the current value, here float  is used for typecast the string to float because the keithley.query(":MEAS?") --> returns the measured value.
+        keithley.write(":OUTP OFF")  # Turn off the output
 
-    timestamp = time.time() - start_time
+        timestamp = time.time() - start_time
 
-    # Append data to lists
-    time_values.append(timestamp)
-    voltage_values.append(voltage_step)
-    # voltage_values.append(voltage_reading)
-    current_values.append(current_reading)
+        # Append data to lists
+        time_values.append(timestamp)
+        voltage_values.append(voltage_step)
+        # voltage_values.append(voltage_reading)
+        current_values.append(current_reading)
 
-    # Write data to the file
-    file.write(f"{timestamp},{voltage_step},{current_reading}\n")
+        # Write data to the file
+        file.write(f"{timestamp},{voltage_step},{current_reading}\n")
 
-    # Update live graph
-    ax1.plot(time_values, voltage_values, 'b-')
-    ax2.plot(time_values, current_values, 'g-')
-    fig.canvas.flush_events()
+        # Update live graph
+        ax1.plot(time_values, voltage_values, 'b-')
+        ax2.plot(time_values, current_values, 'g-')
+
+
+        # Update live graph for Current vs Voltage
+        ax3.plot(voltage_values, current_values, 'r-')
+        ax4.set_xlim(voltage_values[0], voltage_values[-1])
+        ax4.set_ylim(min(current_values), max(current_values))
+
+        fig1.canvas.flush_events()
+        fig2.canvas.flush_events()
 
 keithley.close()  # Close the Keithley instrument
 
