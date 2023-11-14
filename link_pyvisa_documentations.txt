@@ -1,0 +1,6 @@
+#User guide
+https://pyvisa.readthedocs.io/en/latest/introduction/index.html
+
+
+#Installation
+https://pyvisa.readthedocs.io/projects/pyvisa-py/en/latest/installation.html#serial-resources-asrl-instr  
