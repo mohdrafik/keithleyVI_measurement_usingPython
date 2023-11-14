@@ -1,0 +1,67 @@
+C:\python310\lib\site-packages\gpib_ctypes\gpib\gpib.py:54: UserWarning: GPIB library not found. Please manually load it using _load_lib(filename). All GPIB functions will raise OSError until the library is manually loaded.
+  warnings.warn(message)
+Machine Details:
+   Platform ID:    Windows-10-10.0.22621-SP0
+   Processor:      Intel64 Family 6 Model 165 Stepping 2, GenuineIntel
+
+Python:
+   Implementation: CPython
+   Executable:     C:\python310\python.exe
+   Version:        3.10.7
+   Compiler:       MSC v.1933 64 bit (AMD64)
+   Architecture:   AMD64
+   Build:          Sep  5 2022 14:08:36 (#tags/v3.10.7:6cc6b13)
+   Unicode:        UCS4
+
+PyVISA Version: 1.14.0
+
+Backends:
+   ivi:
+      Version: 1.14.0 (bundled with PyVISA)
+      #1: C:\Windows\system32\visa32.dll:
+         found by: auto
+         architecture:
+            ('x86', 64)
+         Vendor: National Instruments
+         Impl. Version: 20971520
+         Spec. Version: 5244928
+      #2: C:\Windows\system32\visa64.dll:
+         found by: auto
+         architecture:
+            ('x86', 64)
+         Vendor: National Instruments
+         Impl. Version: 20971520
+         Spec. Version: 5244928
+   py:
+      Version: 0.7.1
+      ASRL INSTR: Available via PySerial (3.5)
+      TCPIP INSTR: Available
+         Resource discovery:
+         - VXI-11: ok
+         - hislip: disabled (zeroconf not installed)
+      VICP INSTR: Available
+      TCPIP SOCKET: Available
+      USB INSTR:
+         PyUSB does not seem to be properly installed.
+         Please refer to PyUSB documentation and
+         install a suitable backend like
+         libusb 0.1, libusb 1.0, libusbx,
+         libusb-win32 or OpenUSB.
+         No backend available
+      USB RAW:
+         PyUSB does not seem to be properly installed.
+         Please refer to PyUSB documentation and
+         install a suitable backend like
+         libusb 0.1, libusb 1.0, libusbx,
+         libusb-win32 or OpenUSB.
+         No backend available
+      GPIB INSTR:
+         gpib_ctypes is installed but could not locate the gpib library.
+         Please manually load it using:
+           gpib_ctypes.gpib.gpib._load_lib(filename)
+         before importing pyvisa.
+      GPIB INTFC:
+         gpib_ctypes is installed but could not locate the gpib library.
+         Please manually load it using:
+           gpib_ctypes.gpib.gpib._load_lib(filename)
+         before importing pyvisa.
