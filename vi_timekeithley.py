@@ -18,11 +18,11 @@ file_path = "measurement_data.txt"
 # rm = pyvisa.ResourceManager()   # this is for LAN connected  instrument.
 # keithley = rm.open_resource("TCPIP::192.168.1.100::inst0::INSTR")
 
-# rm = pyvisa.ResourceManager()
-# keithley = rm.open_resource('ASRL::COM1::INSTR')  # Replace 'COM1' with the actual COM port where the USB to RS232 cable is connected
+rm = pyvisa.ResourceManager()
+keithley = rm.open_resource('ASRL9::INSTR')  # Replace 'COM1' with the actual COM port where the USB to RS232 cable is connected
 
-rm = pyvisa.ResourceManager("@py")   # @py --> this is for GPIB connection.
-keithley = rm.open_resource('GPIB0::12::INSTR')  # can write our GPIB address at place of '12' , 
+# rm = pyvisa.ResourceManager("@py")   # @py --> this is for GPIB connection.
+# keithley = rm.open_resource('GPIB0::12::INSTR')  # can write our GPIB address at place of '12' , 
 # '12' with the actual GPIB address of your Keithley 6487
 
 # Create a list of voltages to step through
@@ -65,12 +65,12 @@ ax3.set_ylabel('Current (A)')
 # Open the file for writing
 with open(file_path, 'w') as file:
     # Write a header to the file
-    file.write("Time (s),Voltage (V),Current (A)\n")
+    file.write("Time (s),Voltage (V),Current (UA)\n")
 
     start_time = time.time()
     for voltage_step in voltage_steps:
         keithley.write(f":SOUR:VOLT {voltage_step}")
-        time.sleep(50)  # Wait for 50 seconds to stabilize the voltage, can change 50 second to other value of your choice also. 
+        time.sleep(10)  # Wait for 50 seconds to stabilize the voltage, can change 50 second to other value of your choice also. 
 
 
         # for _ in range(10):  # Perform 10 measurements at the current voltage
