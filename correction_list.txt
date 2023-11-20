@@ -65,3 +65,64 @@ Backends:
          Please manually load it using:
            gpib_ctypes.gpib.gpib._load_lib(filename)
          before importing pyvisa.
+
+
+
+
+             """
+        Get current value
+        """
+        return self.query( 'READ?' )
+    try to write the read in plaec of the (':MEAS?') 
+
+
+
+
+code:    START ------------------------------------------->
+
+import visa
+import time
+
+# Connect to the instrument
+instrument_address = 'TCPIP0::192.168.1.100::inst0::INSTR'  # Replace with your instrument's VISA address
+rm = visa.ResourceManager('@py')
+keithley = rm.open_resource(instrument_address)
+
+# Reset the instrument (optional)
+keithley.write('*RST')
+
+# Configure the instrument for current measurement
+keithley.write(':SOUR:FUNC VOLT')       # Set source function to voltage
+keithley.write(':SENS:FUNC "CURR"')      # Set measurement function to current
+keithley.write(':SENS:CURR:RANG 1e-6')   # Set current range to 1 uA
+
+# Turn on the output
+keithley.write(':OUTP ON')
+
+# Set the voltage range and step size
+start_voltage = 1.0
+end_voltage = 10.0
+step_voltage = 1.0
+
+# Iterate through the voltage range
+for voltage in range(int(start_voltage), int(end_voltage) + 1, int(step_voltage)):
+    # Set the source voltage
+    keithley.write(f':SOUR:VOLT {voltage}')
+
+    # Allow some time for settling (you may need to adjust this based on your specific setup)
+    time.sleep(1)
+
+    # Read the current value
+    keithley.write(':READ?')
+    current_value = keithley.read()
+
+    # Print the current value for the current voltage
+    print(f"Voltage: {voltage} V, Measured Current: {current_value} A")
+
+# Turn off the output
+keithley.write(':OUTP OFF')
+
+# Close the connection
+keithley.close()
+
+code:       END ------------------------------------------->

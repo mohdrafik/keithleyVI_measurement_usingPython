@@ -10,35 +10,38 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+from time import sleep
 
 file_path = "measurement_data.txt"
 
 # Initialize the Keithley instrument using PyVISA-py
-
 # rm = pyvisa.ResourceManager()   # this is for LAN connected  instrument.
 # keithley = rm.open_resource("TCPIP::192.168.1.100::inst0::INSTR")
 
-rm = pyvisa.ResourceManager()
-keithley = rm.open_resource('ASRL9::INSTR')  # Replace 'COM1' with the actual COM port where the USB to RS232 cable is connected
-
+rm = pyvisa.ResourceManager('@py')  # this '@py' stands for pyvisa-py library,light wight wrapper for the interface b/w software and hardware. 
+# keithley = rm.open_resource('ASRL9::INSTR')  # Replace 'COM1' with the actual COM port where the USB to RS232 cable is connected
+keithley = rm.open_resource('ASRL3::INSTR', baud_rate=9600, data_bits=8,
+                            stop_bits=pyvisa.constants.StopBits.one, parity=pyvisa.constants.Parity.none, timeout=8000)
+keithley.read_termination = '\r'
+keithley.write('*RST')
 # rm = pyvisa.ResourceManager("@py")   # @py --> this is for GPIB connection.
-# keithley = rm.open_resource('GPIB0::12::INSTR')  # can write our GPIB address at place of '12' , 
+# keithley = rm.open_resource('GPIB0::12::INSTR')  # can write our GPIB address at place of '12' ,
 # '12' with the actual GPIB address of your Keithley 6487
 
-# Create a list of voltages to step through
-voltage_steps = np.arange(0, 22, 2)  # From 0V to 20V in 2V steps  
-# like this : array([ 0,  2,  4,  6,  8, 10, 12, 14, 16, 18, 20])
-
-
 # Configure the Keithley for current measurement
-keithley.write(":SOUR:FUNC VOLT")   # here source is set, which is voltage(input).
+# here source is set, which is voltage(input).
+keithley.write(":SOUR:FUNC VOLT")
 keithley.write(":SENS:FUNC 'CURR'")  # Measure current
 # .write(): This is a method/function associated with the keithley object. It's used to send a command to the Keithley instrument.
-keithley.write(":SENS:CURR:RANG 1e-6")  # So, this line of code tells the Keithley instrument
+# So, this line of code tells the Keithley instrument
+keithley.write(":SENS:CURR:RANG 1e-9")
 # to configure its current measurement settings so that it can measure currents as low as 1 µA
-keithley.write(":SENS:CURR:NPLC 10")  # Set integration time NPLC stands for "Number of Power Line Cycles," which is a measure of integration time. It's a common parameter in instruments like Keithley. 10 is the value that sets the integration time to 10 PLC.
 
+# [CURRent]:RANGe:AUTO:LLIMit
+# Set integration time NPLC stands for "Number of Power Line Cycles," which is a measure of integration time. It's a common parameter in instruments like Keithley. 10 is the value that sets the integration time to 10 PLC.
+keithley.write(":SENS:CURR:NPLC 10")
 
+keithley.write(":OUTP ON")
 # Create empty lists to store data
 time_values = []
 voltage_values = []
@@ -60,27 +63,45 @@ fig2.suptitle('Live Current vs Voltage')
 ax3.set_xlabel('Voltage (V)')
 ax3.set_ylabel('Current (A)')
 
+# -------- this is for the voltage range --------
+v_start = 1E-3
+v_end = 100E-3
+v_step = 10E-3
+n =int(((v_end-v_start)/(v_step)) + 1)
+# print(n)
+volatge_list = [] 
+for i in range(1,n+1,1):
+    term  = v_start + (i-1)*v_step 
+    # print(term)
+    volatge_list.append(term)
+# ------ volatge range --> volatge_list is created for applying the volatge.
 
 
-# Open the file for writing
+
 with open(file_path, 'w') as file:
-    # Write a header to the file
+
     file.write("Time (s),Voltage (V),Current (UA)\n")
 
     start_time = time.time()
-    for voltage_step in voltage_steps:
+
+    # for voltage_step in range(v_start, v_end+1, v_step):
+    for voltage_step in volatge_list:
         keithley.write(f":SOUR:VOLT {voltage_step}")
-        time.sleep(10)  # Wait for 50 seconds to stabilize the voltage, can change 50 second to other value of your choice also. 
+        time.sleep(1)
 
-
-        # for _ in range(10):  # Perform 10 measurements at the current voltage
-        keithley.write(":OUTP ON")  # Turn on the output:  This is the command being sent to the instrument. It tells the instrument to turn its output on. When the output is turned on, the instrument will generate or provide the specified output, which in this context is current.
-        
+        # Turn on the output:  This is the command being sent to the instrument. It tells the instrument to turn its output on. When the output is turned on, the instrument will generate or provide the specified output, which in this context is current.
+        # keithley.write(":OUTP ON")
+        # time.sleep(1) # Wait for 1 seconds
         # voltage_reading = float(keithley.query(":READ?"))  # --> can read voltage also.
         # keithley.write(":OUTP OFF")  # Turn off the output, it's good practice.
 
-        current_reading = float(keithley.query(":MEAS?")) # reading the current value, here float  is used for typecast the string to float because the keithley.query(":MEAS?") --> returns the measured value.
-        keithley.write(":OUTP OFF")  # Turn off the output
+        # current_reading = float(keithley.query(":MEAS?")) # reading the current value, here float  is used for typecast the string to float because the keithley.query(":MEAS?") --> returns the measured value.
+
+        keithley.write(':READ?')
+        current_reading = keithley.read()
+
+        # print(current_reading)
+        # keithley.write(":OUTP OFF")  # Turn off the output
 
         timestamp = time.time() - start_time
 
@@ -91,12 +112,11 @@ with open(file_path, 'w') as file:
         current_values.append(current_reading)
 
         # Write data to the file
-        file.write(f"{timestamp},{voltage_step},{current_reading}\n")
+        file.write(f"{timestamp }, { voltage_step},{ current_reading}\n")
 
         # Update live graph
         ax1.plot(time_values, voltage_values, 'b-')
         ax2.plot(time_values, current_values, 'g-')
-
 
         # Update live graph for Current vs Voltage
         ax3.plot(voltage_values, current_values, 'r-')
