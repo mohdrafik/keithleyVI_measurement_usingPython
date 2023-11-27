@@ -1,3 +1,7 @@
+githublink: using GPIB CABLE:
+https://github.com/demisjohn/Keithley-I-V-Sweep/blob/master/Keithley%20I-V%20Sweep%20v2.py
+
+
 #User guide
 https://pyvisa.readthedocs.io/en/latest/introduction/index.html
 

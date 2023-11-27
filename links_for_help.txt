@@ -1,0 +1,27 @@
+https://nl.mathworks.com/help/instrument/visadev.html#d126e99628  -- > for MATLAB
+
+https://www.youtube.com/watch?v=1HQxnz3P9P4&t=3s
+
+https://nl.mathworks.com/help/instrument/visadev.writeread.html#d126e105599
+
+https://nl.mathworks.com/help/instrument/read-waveform-from-tektronix-tds1002-using-scpi-commands.html
+
+https://pyvisa.readthedocs.io/en/stable/
+
+https://www.usb.org/documents
+
+https://pyusb.github.io/pyusb/
+
+https://github.com/pyusb/pyusb/blob/master/docs/faq.rst
+
+https://libusb.sourceforge.io/api-1.0/group__libusb__dev.html#ga77eedd00d01eb7569b880e861a971c2b
+
+https://github.com/pyusb/pyusb/blob/master/docs/tutorial.rst
+
+https://www.google.com/search?q=pyvisa-py+-version+check&oq=pyvisa-py+-version+check&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCTEwODk2ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+
+https://pyvisa.readthedocs.io/en/latest/introduction/rvalues.html
+
+https://pyvisa.readthedocs.io/projects/pyvisa-py/en/latest/faq.html
+
+https://www.keysight.com/us/en/lib/software-detail/programming-examples/io-libraries-example-programs-2798637.html
