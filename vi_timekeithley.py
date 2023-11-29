@@ -10,7 +10,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-from time import sleep
+from time import time,sleep
 
 file_path = "measurement_data.txt"
 
@@ -31,11 +31,13 @@ keithley = rm.open_resource('ASRL3::INSTR', baud_rate=9600, data_bits=8,
                             stop_bits=pyvisa.constants.StopBits.one, 
                             parity=pyvisa.constants.Parity.none,
                             flow_control=pyvisa.constants.VI_ASRL_FLOW_XON_XOFF,
-                            timeout=8000)
-keithley.read_termination = '\r' # # Set terminator for read operations to <CR>
-keithley.write_termination = '\r'   # # Set terminator for write operations to <CR>
+                            timeout=100000)
 
 keithley.write('*RST')
+# keithley.read_termination = '\r' # # Set terminator for read operations to <CR>
+keithley.write_termination = '\r'   # # Set terminator for write operations to <CR>
+
+
 # rm = pyvisa.ResourceManager("@py")   # @py --> this is for GPIB connection.
 # keithley = rm.open_resource('GPIB0::12::INSTR')  # can write our GPIB address at place of '12' ,
 # '12' with the actual GPIB address of your Keithley 6487
@@ -43,11 +45,11 @@ keithley.write('*RST')
 # Configure the Keithley for current measurement
 # here source is set, which is voltage(input).
 keithley.write(":SOUR:FUNC VOLT")
-keithley.write(":SENS:FUNC 'CURR'")  # Measure current
+keithley.write(":SENS:FUNC 'CURR:DC' ")  # Measure current
 # .write(): This is a method/function associated with the keithley object. It's used to send a command to the Keithley instrument.
 # So, this line of code tells the Keithley instrument
 # keithley.write(":SENS:CURR:RANG 13E-9 ")  # disable autoranging
-keithley.write(':SENS:CURR:RANG:AUTO ON')
+keithley.write(":SENS:CURR:RANG:AUTO ON")
 # to configure its current measurement settings so that it can measure currents as low as 1 µA
 
 # [CURRent]:RANGe:AUTO:LLIMit
@@ -100,7 +102,7 @@ with open(file_path, 'w') as file:
     # for voltage_step in range(v_start, v_end+1, v_step):
     for voltage_step in volatge_list:
         keithley.write(f":SOUR:VOLT {voltage_step}")
-        time.sleep(1)
+        time.sleep(2)
 
         # Turn on the output:  This is the command being sent to the instrument. It tells the instrument to turn its output on. When the output is turned on, the instrument will generate or provide the specified output, which in this context is current.
         # keithley.write(":OUTP ON")
@@ -117,7 +119,10 @@ with open(file_path, 'w') as file:
         keithley.write(':READ?')
         current_reading = keithley.read()
         # time.sleep(1)
-        print(current_reading)
+        print("before striping:",current_reading)
+        current_reading = float(current_reading.split(',')[0].rstrip('A'))
+        print("After striping:ACTUAL READING OF CURRENT --> ",current_reading)
+
         # keithley.write(":OUTP OFF")  # Turn off the output
 
         timestamp = time.time() - start_time
